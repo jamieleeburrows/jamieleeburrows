@@ -1,0 +1,104 @@
+insert into person (first_name, last_name)
+values ("Jamie-Lee", "Burrows");
+
+ALTER TABLE person ADD dob date not NULL;
+
+UPDATE person 
+SET dob = '1976-10-10'
+where first_name = "Jamie-Lee"
+and last_name = "Burrows";
+
+DELETE FROM person 
+WHERE first_name = "Diana"
+and last_name = "Taurasi";
+
+ALTER TABLE contact_list ADD favorite varchar(10) NULL;
+
+UPDATE contact_list
+SET favorite = "y"
+where contact_id = 1;
+
+UPDATE contact_list
+SET favorite = "n"
+where contact_id != 1;
+
+insert into contact_list (person_id, contact_id, favorite)
+values
+(1, 7, "y"),
+(2, 5, "n"),
+(5, 2, "n");
+
+CREATE TABLE image ( 
+    image_id INT(8) NOT NULL auto_increment,
+    image_name VARCHAR(50) not NULL,
+    image_location VARCHAR(250) not NULL,
+    PRIMARY KEY (image_id)
+) AUTO_INCREMENT=1;
+
+CREATE TABLE message_image ( 
+    message_id INT(8) NOT NULL,
+    image_id INT(8) NOT NULL,
+    PRIMARY KEY (message_id, image_id)
+);
+
+insert into image (image_name, image_location)
+values
+("Cottage", "Cotswolds, England"),
+("Empire State Building", "NY, NY"),
+("Big Ben", "London, England"),
+("Opera House", "Sydney, Austrailia"),
+("Great Wall", "China");
+
+insert into message_image (message_id, image_id)
+values
+(1, 1),
+(5, 1),
+(5, 3),
+(5, 4),
+(3, 5);
+
+select p.first_name,
+p.last_name,
+m.message,
+i.image_name,
+i.image_location
+from person p
+join message m on m.sender_id = p.person_id
+join message_image mi on mi.message_id = m.message_id
+join image i on i.image_id = mi.image_id;
+
+SELECT sender.first_name AS "SENDER_FIRST_NAME", 
+sender.last_name AS "SENDER_LAST_NAME", 
+receiver.first_name AS "RECEIVER_FIRST_NAME", 
+receiver.last_name AS "RECEIVER_LAST_NAME", 
+message.message_id AS "MESSAGE_ID", 
+message.message AS "MESSAGE", 
+message.send_datetime AS "MESSAGE_TIMESTAMP"
+FROM person AS sender
+JOIN message ON sender.person_id = message.sender_id 
+JOIN person AS receiver ON message.receiver_id = receiver.person_id 
+WHERE UPPER(sender.last_name) = 'PHELPS'
+AND UPPER(sender.first_name) = 'MICHAEL';
+
+SELECT COUNT(m.message_id) AS MSG_CNT,
+p.person_id,
+p.first_name,
+p.last_name
+FROM message m
+JOIN person p ON m.sender_id = p.person_id
+group by p.person_id,
+p.first_name,
+p.last_name;
+
+select m.message_id,
+m.message,
+m.send_datetime,
+i.image_name,
+i.image_location
+from message m
+join message_image mi on mi.message_id = m.message_id
+join image i on i.image_id = mi.image_id
+group by m.message_id,
+m.message,
+m.send_datetime;
+
